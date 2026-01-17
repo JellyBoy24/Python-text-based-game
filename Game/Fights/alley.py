@@ -1,6 +1,6 @@
 import time as t
 import random as rnd
-from Game.entities import fighter_A, fighter_B, fighter_C
+from Game.entities import bandit_A, bandit_B
 
 def choose_target(enemies):
     living = [en for en in enemies if en.hp > 0] # creates a new list for all living enemies
@@ -32,12 +32,12 @@ def choose_target(enemies):
 
 
 
-def training_fight_sequence(p, inv):
-    enemy_pool = [fighter_A, fighter_B, fighter_C]
-    n_o_e = rnd.randint(1, 3)
+def alley_fight_sequence(p, inv):
+    enemy_pool = [bandit_A, bandit_B]
+    n_o_e = rnd.randint(1, 2)
     enemies = rnd.sample(enemy_pool, k=n_o_e)
 
-    print("enemies emerge from the shadows of the training arena\n")
+    print("enemies emerge from the shadows of the alley\n")
     t.sleep(1)
     for i, en in enumerate(enemies, 1):
         en.hp = en.maxhealth
@@ -95,7 +95,7 @@ def training_fight_sequence(p, inv):
 
                     print(f"{p.name} has dealt {round(damage_dealt, 2)} damage to the {target.name}")
 
-                player_turn = False
+                    player_turn = False
 
 
 
@@ -262,7 +262,6 @@ def training_fight_sequence(p, inv):
         for i, en in enumerate(enemies, 1):
             print(f"{i}) {en.name}: {round(en.hp, 2)}/{en.maxhealth}")
         print("\n")
-
 
 
 
