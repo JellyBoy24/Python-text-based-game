@@ -7,7 +7,7 @@ import random as rnd
 
 def secret_fight_sequence(p, inv):
     e = secret_keeper
-    e.hp = e.max_hp
+    e.hp = e.maxhealth
     print(f"1) {e.name} (HP: {e.hp}/{e.maxhealth})\n")
 
     while True:

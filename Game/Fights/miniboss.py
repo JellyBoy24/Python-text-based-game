@@ -6,7 +6,7 @@ import random as rnd
 
 def mini_boss_fight_sequence(p, inv):
     e = mini_boss
-    e.hp = e.max_hp
+    e.hp = e.maxhealth
     print(f"1) {e.name} (HP: {e.hp}/{e.maxhealth})\n")
 
     while True:

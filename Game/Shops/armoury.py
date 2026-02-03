@@ -36,57 +36,63 @@ def armoury_shop_sequence(p, inv, weapons, armour, deada):
 
         match choice:
             case 1:
-                print("swords")
+                print("swords:")
                 t.sleep(0.3)
-                for items in weapons:
-                    print(items.name)
+                for index, items in enumerate(weapons):
+                    print(f"{index+1}) {items.name}")
                     t.sleep(0.3)
-                print("\narmour")
+                print("\narmour:")
                 t.sleep(0.3)
-                for items in armour:
-                    print(items.name)
+                for index, items in enumerate(armour):
+                    print(f"{index+1}) {items.name}")
                     t.sleep(0.3)
             case 2:
-                for swords in weapons:
+                for index, swords in enumerate(weapons):
                     print(swords.name)
                     t.sleep(0.3)
-                sword_choice = int(input("which sword do you want to buy?(1/2 etc): \n"))
-                if sword_choice > len(weapons):
-                    print("that is not an option")
+                try:
+                    sword_choice = int(input("which sword do you want to buy?: \n"))
+                except ValueError:
+                    print("that's not an option")
                 else:
-                    sword = weapons[sword_choice - 1]
-                    if sword.name == "Copper Sword":
-                        if dead:
-                            if input("steal the sword(y/n): ").lower() == "y":
-                                print("you stole the sword")
-                                return inv, dead, sword, shield
+                    if sword_choice < 1 or sword_choice > len(weapons):
+                        print("that is not an option")
+
+                sword = weapons[sword_choice - 1]
+
+                if sword.name == "Copper Sword":
+                    if dead:
+                        if input("steal the sword(y/n): ").lower() == "y":
+                            print("you stole the sword")
+                            return inv, dead, sword, shield
+                    else:
+                        print("'that will cost you 150 gold.")
+                        if input("do you want to buy this sword?(y/n): ").lower == "y":
+                            inv["gold"] -= 150
+                            print("'alright, give me a minute'")
+                            t.sleep(3)
+                            print("'its done, use it well'")
+                            t.sleep(1)
+                            return inv, dead, sword, shield
                         else:
-                            print("'that will cost you 150 gold.")
-                            if input("do you want to buy this sword?(y/n): ").lower == "y":
-                                inv["gold"] -= 250
-                                print("'alright, give me a minute'")
-                                t.sleep(3)
-                                print("'its done, use it well'")
-                                t.sleep(1)
-                                return inv, dead, sword, shield
-                            else:
-                                print("'alrighty.'")
-                    elif sword.name == "Iron Sword":
-                        if dead:
-                            if input("steal the sword(y/n): ").lower() == "y":
-                                print("you steal the sword")
-                                return inv, dead, sword, shield
+                            print("'alrighty.'")
+
+                elif sword.name == "Iron Sword":
+                    if dead:
+                        if input("steal the sword(y/n): ").lower() == "y":
+                            print("you steal the sword")
+                            return inv, dead, sword, shield
+                    else:
+                        print("'that will cost you 300 gold.")
+                        if input("do you want to buy this sword?(y/n): ").lower == "y":
+                            inv["gold"] -= 250
+                            print("'alright, give me a minute'")
+                            t.sleep(3)
+                            print("'its done, use it well'")
+                            t.sleep(1)
+                            return inv, dead, sword, shield
                         else:
-                            print("'that will cost you 300 gold.")
-                            if input("do you want to buy this sword?(y/n): ").lower == "y":
-                                inv["gold"] -= 250
-                                print("'alright, give me a minute'")
-                                t.sleep(3)
-                                print("'its done, use it well'")
-                                t.sleep(1)
-                                return inv, dead, sword, shield
-                            else:
-                                print("'alrighty.'")
+                            print("'alrighty.'")
 
             case 3:
                 for armours in armour:

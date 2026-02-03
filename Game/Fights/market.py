@@ -7,7 +7,7 @@ import random as rnd
 
 def market_fight_sequence(p, inv):
     e = market_keeper
-    e.hp = e.max_hp
+    e.hp = e.maxhealth
     print(f"1) {e.name} (HP: {e.hp}/{e.maxhealth})\n")
 
     while True:

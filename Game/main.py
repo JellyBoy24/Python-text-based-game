@@ -74,6 +74,27 @@ def generate_map():
 
     return temp
 
+def generate_mini_map():
+    temp = [
+        ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+        ["xx", "CI", "CE", "ST", "ST", "MK", "MI", "xx", "FB", "xx"],
+        ["xx", "CC", "xx", "xx", "ST", "xx", "xx", "xx", "ST", "xx"],
+        ["xx", "CT", "xx", "TA", "ST", "AR", "AI", "xx", "ST", "xx"],
+        ["xx", "xx", "xx", "xx", "ST", "xx", "xx", "xx", "ST", "EX"],
+        ["xx", "AL", "AL", "AL", "ST", "PT", "PI", "xx", "ST", "xx"],
+        ["xx", "xx", "xx", "xx", "ST", "xx", "xx", "ST", "ST", "xx"],
+        ["xx", "MB", "ST", "ST", "ST", "ST", "BA", "ST", "FO", "xx"],
+        ["xx", "xx", "xx", "xx", "GA", "ST", "xx", "xx", "xx", "xx"],
+        ["xx", "SI", "SS", "ST", "ST", "ST", "xx", "xx", "xx", "xx"],
+        ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"]
+    ]
+
+    return temp
+
+def overlay_player(mini_map, y, x):
+    new_map = [row[:] for row in mini_map]
+    new_map[y][x] = "PL"
+    return new_map
 
 def main():
     #setups
@@ -101,7 +122,6 @@ def main():
     moved = False
     interacted = False
     attacked = False
-    tutorial = False
     tut_apples = False
     tut_won = False
     alley_won = False
@@ -116,8 +136,15 @@ def main():
     secret_keeper_dead = False
     mini_boss_dead = False
     final_boss_dead = False
+    skip = False
 
-    while not tutorial:
+    while not skip:
+        if input("skip the tutorial?(y/n): ").lower() == "y":
+            skip = True
+        else:
+            skip = False
+
+    while not skip:
         print(f"the king explains what you must do")
         t.sleep(1)
         print(f"'you must defeat the (mini-boss) and then defeat the (final boss) in order to win'")
@@ -133,11 +160,6 @@ def main():
         print("skill uses the skill of your weapons, be warned, the skill can fail")
         t.sleep(3)
         print(f"the king hands you 2 apples")
-        if not tut_apples:
-            inventory["apples"] += 2
-            tut_apples = True
-        else:
-            print("the king reminds you of the 2 apples he gave you")
         t.sleep(2)
         print("eat those to regain health, all healing items will be in the items option\n"
               "low heal (apples) = 5 hp\n"
@@ -151,36 +173,41 @@ def main():
             break
         else:
             print("lets go over that again")
-    print(f"A training dummy rises from the floor")
-    t.sleep(2)
+    t.sleep(1)
 
-    while not tut_won:
-        tut_won = tutorial_fight_sequence(player, inventory)
-        if tut_won:
-            print(f"The king congratulates you on your victory")
-            t.sleep(1)
-            print(f"'well done, you now understand the basics of combat'")
-            t.sleep(1)
-            print(f"'good luck on your journey'")
-            t.sleep(1)
-            break
-        else:
-            print(f"The king sighs in disappointment")
-            t.sleep(1)
-            print(f"'lets try that again, shall we?'")
-            t.sleep(2)
+    if not tut_apples:
+        inventory["apples"] += 2
+        tut_apples = True
+
+    while not skip:
+        if not tut_won:
+            print("a training dummy rises from the floor")
+            tut_won = tutorial_fight_sequence(player, inventory)
+            if tut_won:
+                print(f"The king congratulates you on your victory")
+                t.sleep(1)
+                print(f"'well done, you now understand the basics of combat'")
+                t.sleep(1)
+                print(f"'good luck on your journey'")
+                t.sleep(1)
+                break
+            else:
+                print(f"The king sighs in disappointment")
+                t.sleep(1)
+                print(f"'lets try that again, shall we?'")
+                t.sleep(2)
 
 
 
     print(f'you are currently in the {player.position.replace("_", " ")}\n')
     while True:
         try:
-            action = int(input("1) Move\n2) Interact/look around\n3) Attack\n4) Check self/inventory\nwhat do you want to do?: "))
+            action = int(input("1) Move\n2) Interact/look around\n3) Attack\n4) Check self/inventory\n5) display Map\nwhat do you want to do?: "))
         except ValueError:
             print("not an option")
             continue
         else:
-            if action not in [1, 2, 3, 4]:
+            if action not in [1, 2, 3, 4, 5]:
                 print("not an option")
                 continue
 
@@ -257,6 +284,7 @@ def main():
                         t.sleep(1)
                         player.weapon = shadow_dagger
                         inventory["weapon"] = player.weapon.name
+                        unlocked_weapons.append(shadow_dagger)
                         print(f"you have equipped the {player.weapon.name}")
                         interacted = True
                         tower_interaction = True
@@ -344,6 +372,7 @@ def main():
                         t.sleep(1)
                         player.weapon = shadow_dagger
                         inventory["weapon"] = player.weapon.name
+                        unlocked_weapons.append(shadow_dagger)
                         print(f"you have equipped the {player.weapon.name}")
                         interacted = True
                         tower_interaction = True
@@ -393,14 +422,20 @@ def main():
                 continue
 
             elif inventory_choice == 1:
-                for items in unlocked_weapons:
-                    print(items.name)
+                for index, items in enumerate(unlocked_weapons):
+                    print(f"{index+1}) {items.name}")
                     t.sleep(0.3)
-                weapon_switch = int(input("which weapon do you want to equip?(1,2,3 ETC): "))
+                try:
+                    weapon_switch = int(input("which weapon do you want to equip?: "))
+                except ValueError:
+                    print("you cant equip that")
+                else:
+                    if weapon_switch > len(unlocked_weapons):
+                        print("you cant equip that")
                 if weapon_switch == 0:
                     print("you cant do that")
                 else:
-                    if not (weapon_switch > len(unlocked_weapons)):
+                    if not weapon_switch > len(unlocked_weapons):
                         if player.weapon not in unlocked_weapons:
                             unlocked_weapons.append(player.weapon) # saves the last weapon equipped
                         player.weapon = unlocked_weapons[weapon_switch - 1]
@@ -420,17 +455,24 @@ def main():
                 t.sleep(0.3)
 
             elif inventory_choice == 3:
-                for items in unlocked_armour:
-                    print(items.name)
+                for index, items in enumerate(unlocked_armour):
+                    print(f"{index+1}) {items.name}")
                     t.sleep(0.3)
-                armour_switch = int(input("which armour do you want to equip?(1,2,3 ETC): "))
+                try:
+                    armour_switch = int(input("which armour do you want to equip?: "))
+                except ValueError:
+                    print("you cant equip that")
+                else:
+                    if armour_switch > len(unlocked_armour):
+                        print("you cant equip that")
+
                 if armour_switch == 0:
                     print("you cant do that")
                 else:
                     if not armour_switch > len(unlocked_armour):
                         if player.armour not in unlocked_armour:
                             unlocked_armour.append(player.armour)  # saves the last warmour equipped
-                        player.armour = unlocked_weapons[armour_switch - 1]
+                        player.armour = unlocked_armour[armour_switch - 1]
                         print(f"you equipped the {player.armour.name} armour")
                         inventory["armour"] = player.armour
                     else:
@@ -442,10 +484,35 @@ def main():
                 print(f"it reduces damage by {player.armour.defence*100}%")
                 t.sleep(0.3)
 
+        elif action == 5:
+            display = generate_mini_map()
+            new_display = overlay_player(display, y_pos, x_pos)
+            for row in new_display:
+                print(row)
+            print("CI = castle interior\n"
+                  "CE = castle entrance\n"
+                  "CC = castle courtyard\n"
+                  "CT = castle tower\n"
+                  "ST = street\n"
+                  "AL = alley\n"
+                  "TA = training arena\n"
+                  "MK = Market\n"
+                  "AR = armoury\n"
+                  "PT = potion shop\n"
+                  "GA = gladiator arena\n"
+                  "MB = Mini-boss\n"
+                  "SS = Secret shop\n"
+                  "BA = barrier\n"
+                  "FO = forest\n"
+                  "EX = exit\n"
+                  "FB = final boss\n"
+                  "XX = wall\n"
+                  "PL = Player\n")
 
         if moved:
             interacted = False
             attacked = False
+
             y_pos, x_pos  = new_y, new_x
             player.position = tile
 
@@ -503,10 +570,10 @@ def main():
                             locked_armour.remove(shielda)
                     t.sleep(1)
                     player.position = local_map[3][4]
-                    y_pos, x_pos = 3, 5
+                    y_pos, x_pos = 3, 4
                 else:
                     player.position = local_map[3][4]
-                    y_pos, x_pos = 3, 5
+                    y_pos, x_pos = 3, 4
                     print("you walk away from the armoury.")
 
             elif player.position == local_map[5][5]: # checks if on the potion shop
@@ -520,10 +587,10 @@ def main():
                     player.hp = 100
                     print("you walk away from the hut.")
                     player.position = local_map[5][4]
-                    y_pos, x_pos = 5, 5
+                    y_pos, x_pos = 5, 4
                 else:
                     player.position = local_map[5][4]
-                    y_pos, x_pos = 5, 5
+                    y_pos, x_pos = 5, 4
                     print("you walk away from the hut.")
 
             elif player.position == local_map[5][2]: # checks if player is on the second alleyway
@@ -538,10 +605,12 @@ def main():
                             inventory["gold"] += 250
                         else:
                             print("they shove you out of the alleyway")
-                            player.position = local_map[5][4]
+                            player.position = local_map[5][3]
+                            y_pos, x_pos = 5, 3
                     else:
                         print("you walk away from the alleyway")
-                        player.position = local_map[5][4]
+                        player.position = local_map[5][3]
+                        y_pos, x_pos = 5, 3
                 else:
                     continue
 
@@ -653,7 +722,7 @@ def main():
 
 
 
-            elif player.position == local_map[8][4]: # checks if on the arena
+            elif player.position == local_map[8][4]: # checks if on the gladiator arena
                 print(f"you stand outside of a gladiators arena.")
                 t.sleep(1)
                 if input("go inside?(y/n): ").lower() == "y":
@@ -703,6 +772,8 @@ def main():
                 print(f"you win!")
                 t.sleep(1)
                 exit()
+
+        moved = False
 
 
 

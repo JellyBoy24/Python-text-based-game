@@ -6,7 +6,7 @@ from Game.entities import *
 
 def tutorial_fight_sequence(p, inv):
     e = dummy
-    e.hp = e.max_hp
+    e.hp = e.maxhealth
     print(f"1) {e.name} (HP: {e.hp}/{e.maxhealth})\n")
 
     while True:
